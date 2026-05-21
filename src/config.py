@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -20,6 +20,13 @@ class BrokerConfig(BaseSettings):
     oanda_environment: str = "practice"
 
     model_config = {"env_file": ".env", "extra": "ignore"}
+
+    @field_validator("mt5_login", mode="before")
+    @classmethod
+    def parse_mt5_login(cls, v: object) -> int:
+        if isinstance(v, str) and v.strip() == "":
+            return 0
+        return int(v)
 
 
 class TradingConfig(BaseSettings):
